@@ -57,13 +57,17 @@ resource "aws_instance" "mavm" {
   }
 }
 
-# resource "aws_vpc_security_group_egress_rule" "sshout" {
-#   security_group_id = aws_security_group.monsg.id
-#   cidr_ipv4         = "0.0.0.0/0"
-#   ip_protocol       = -1
+resource "aws_vpc_security_group_egress_rule" "sshout" {
+  for_each          = aws_security_group.monsg
+  security_group_id = each.value.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = -1
+}
+
+# output de l'ip publique de chaque VM
+# output "ip" {
+#   value = aws_instance.mavm[*].public_ip
 # }
-
-#output "ip" {
-#  value = aws_instance.mavm[each.key].public_ip
-#}
-
+output "ip" {
+  value = { for instance_key, instance in aws_instance.mavm : instance_key => instance.public_ip }
+}

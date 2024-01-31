@@ -1,6 +1,8 @@
 resource "aws_key_pair" "macle" {
-  key_name   = "aurelien-key"
-  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAgEAofrrnYfP6Lw0EwJ3tzFz3GRC7/itLMF1sDLo73RHmg0qKvj3CcYQGKMGIBkWum9uFpUwJmYYms/TRKBpKvux8JcukSdSA/cZRzlAnNn4ZDXhxpnHE6xcVCoHeHXg95479K8w33ZLsXTHviUripz2tP/a/HNqfHHDPiiGg7LuV5UBNGU5yvfbwJ4Njbob7+uavSnW6DkT8HGloZincvCljH7DBuCK6ZKo0FdgJ1gcIliKQkqEyVyRt1uhGoiaPpU+BQ+wHFeROqLBjSvSZRX/oJtQRLDnghNXTq6XrMuqTenVWDP/YQFZd6i7lk/bt3Y8obrGa1OHNf+9RR783CZijjApiuctKobCN4SVd1n8xzjFtsp0uALwZy+WCJfH9DZanv4vOMLj0DPjvfQQ3h3/HWgA6+vDhJ0a5X8PAQ5mWdRsOqUUFZyFvoP/VslnP+/Fsf/FfO2Swp9uCqxVVm3vFi4tpyFj1XmjkFSCkFdTsBebA0nLL5hkzq0LxWSSNMSxW9S+D7cpy1mgwgrPBFzwS5c/mL1+sNakpxro4vrI0u+lRBw96DtqLpT1BGU5w2qbHMuSfrhu1SM/GyGTslgNorpNY5u5Rs5e6dMfAotmrM00f1oML/qORYV2K/QnQSVTHM5hcUWxyzXv7RXMRcuQWAKlWXPk0IxbnN0a12yIv50= /home/aurelien/.ssh/id_rsa"
+  for_each   = var.users
+  key_name   = "${each.value.username}-key"
+  public_key = each.value.public_key
+  # public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDdkORp8949DkeMkF9aCccSWloQrl6dvdQenNKaReoXhmikB0xzfWWgfdbwzJcARvjE1TFoFiYj/lJ28iH5cPVxE9qlx5fN3w48Zlxv0HrgVWRwXK4TrCvqq63VPPuxwSmIGtzNKqIcf91bhEwb713rtUQZ1el5c7JNZj7wRGvXuOG2RWUJ1u+EX3rpSNtAQ0Rc4mm2FbbvvTQynwWa7Z9pJG2FvYMnSYBEUZAzW+hAVWQu3MTDfz6LS7TEyKYCNLj5fKDT4f6UnIX6gpy0B4fWPst4Lt9aQYQXWfwXybTwnA5qpuYb7mqjap0reDeuizJwx/pJWPH4tIB9goViUZf0RtaPKAA6e/mdF6KWYc5cjS5NJ6W5Z+4ddo7n3Na3abgr9uNEHUi3Bv+jVgRcwywUhwdU1K9DSVjso76tWn5NFyd44WkF1SVH5fhFOktBfIgjJ3ePovsmzqbqQC6ltl/PmCs1nyYGolx/rM+ouP6wiGYr/7k1OhhnrF0G235J5doo1yt4AQkenBXmBBncXRtXrhlrhB1vU8Lhe2GkTIH1W18zDKQyVxMpLNhjm5rfM3UzBLLkolXkk2kKEpjyQW5yXw3qFMJz764T0HXKb39jWDkDtZL6ugYoMDXFpRb44c3MbeAqNXHcVyEERVvQMZwqVmYK4npkpD1yYktxCVLRjw== chouvang@free.fr"
 }
 
 data "aws_ami" "ubuntu" {
@@ -8,7 +10,7 @@ data "aws_ami" "ubuntu" {
 
   filter {
     name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-arm64-server-*"]
+    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
   }
 
   filter {
@@ -19,45 +21,50 @@ data "aws_ami" "ubuntu" {
   owners = ["099720109477"] # Canonical
 }
 
-resource "aws_instance" "mavm" {
-  for_each = toset(var.users)
-  ami = data.aws_ami.ubuntu.id
-  instance_type = "t4g.nano"
-  key_name = aws_key_pair.macle.key_name
-  security_groups = [ aws_security_group.monsg.name ]
-  tags = {
-    Name = "${each.key}-VM"
-  }
+
+
+data "dns_a_record_set" "monnoip" {
+  for_each = var.users
+  host     = each.value.hostname
 }
 
 resource "aws_security_group" "monsg" {
-  name = "allow admin ssh"
+  for_each    = var.users
+  name        = "${each.value.username}-security-group"
   description = "allow all admins to connect via SSH, using source public ip"
   tags = {
-    Name = "Admin SG"
+    Name = "${each.value.username}-security-group"
   }
 }
 
-data "dns_a_record_set" "monnoip" {
-  host = "profy12.ddns.net"
-}
 
 resource "aws_vpc_security_group_ingress_rule" "sshin" {
-  security_group_id = aws_security_group.monsg.id
-  from_port = 22
-  to_port = 22
-  #cidr_ipv4 = "90.116.210.191/32"
-  cidr_ipv4 = "${data.dns_a_record_set.monnoip.addrs[0]}/32"
-  ip_protocol = "tcp"
+  for_each          = aws_security_group.monsg
+  security_group_id = each.value.id
+  from_port         = 22
+  to_port           = 22
+  cidr_ipv4         = "${data.dns_a_record_set.monnoip[each.key].addrs[0]}/32"
+  ip_protocol       = "tcp"
 }
 
-resource "aws_vpc_security_group_egress_rule" "sshout" {
-  security_group_id = aws_security_group.monsg.id
-  cidr_ipv4 = "0.0.0.0/0"
-  ip_protocol = -1
+resource "aws_instance" "mavm" {
+  for_each        = var.users
+  ami             = data.aws_ami.ubuntu.id
+  instance_type   = "t2.micro"
+  key_name        = aws_key_pair.macle[each.key].key_name
+  security_groups = ["${each.value.username}-security-group"] # Utilisation de l'ID du groupe de sécurité correspondant à chaque utilisateur
+  tags = {
+    Name = "${each.value.username}-VM"
+  }
 }
+
+# resource "aws_vpc_security_group_egress_rule" "sshout" {
+#   security_group_id = aws_security_group.monsg.id
+#   cidr_ipv4         = "0.0.0.0/0"
+#   ip_protocol       = -1
+# }
 
 #output "ip" {
 #  value = aws_instance.mavm[each.key].public_ip
 #}
-  
+

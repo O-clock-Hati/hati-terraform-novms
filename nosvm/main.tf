@@ -46,6 +46,13 @@ resource "aws_vpc_security_group_ingress_rule" "sshin" {
   ip_protocol       = "tcp"
 }
 
+resource "aws_vpc_security_group_egress_rule" "sshout" {
+  for_each          = aws_security_group.monsg
+  security_group_id = each.value.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = -1
+}
+
 resource "aws_instance" "mavm" {
   for_each        = var.users
   ami             = data.aws_ami.ubuntu.id
@@ -57,13 +64,7 @@ resource "aws_instance" "mavm" {
   }
 }
 
-# resource "aws_vpc_security_group_egress_rule" "sshout" {
-#   security_group_id = aws_security_group.monsg.id
-#   cidr_ipv4         = "0.0.0.0/0"
-#   ip_protocol       = -1
-# }
-
-#output "ip" {
-#  value = aws_instance.mavm[each.key].public_ip
-#}
+output "ip" {
+  value = { for instance_key, instance in aws_instance.mavm : instance_key => instance.public_ip }
+}
 

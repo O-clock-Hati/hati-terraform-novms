@@ -1,0 +1,6 @@
+Continuez dans votre dépôt d'hier et créez un nouveau répertoire "mavm" pour déployer votre VM
+Reprenez votre fichier provider.tf
+Repartez du gist https://gist.github.com/profy12/1a923c625271d5c704d39aa18e6d6a3a dans le fichier main.tf
+Modifier pour adapter avec clé publique bien sûr.
+Créez les ressources de security group pour autoriser l'accès uniquement à votre IP publique en ssh sur le port 22.
+[Essayez de trouver un moyen pour automatiser la mise en ligne de votre IP publique (peut être un dns provider avec un dyn DNS, ...)]

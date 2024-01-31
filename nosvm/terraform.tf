@@ -1,6 +1,7 @@
 terraform {
   cloud {
-    organization = "hati"
+    organization = "hati-blue"
+
     workspaces {
       name = "la-taniere"
     }

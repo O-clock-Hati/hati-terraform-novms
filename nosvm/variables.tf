@@ -1,5 +1,4 @@
 variable "users" {
-  type = list(string)
-  default = ["profy12"]
+  type    = list(string)
+  default = ["a2b78"]
 }
-

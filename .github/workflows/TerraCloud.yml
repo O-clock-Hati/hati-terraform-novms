@@ -27,11 +27,11 @@ jobs:
 
     - name: Terraform Plan
       working-directory: nosvm
-      run: terraform plan -out=tfplan
+      run: terraform plan
 
     - name: Terraform Apply
       working-directory: nosvm
-      run: terraform apply tfplan
+      run: terraform apply -auto-approve
 
     # - name: Terraform Destroy
     #   working-directory: nosvm

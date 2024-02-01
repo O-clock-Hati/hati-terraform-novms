@@ -3,3 +3,6 @@ provider "aws" {
 }
 provider "dns" {
 }
+provider "tfe" {
+  hostname = "app.terraform.io"
+}

@@ -66,5 +66,5 @@ resource "aws_instance" "mavm" {
 
 output "ip" {
   value = { for instance_key, instance in aws_instance.mavm : instance_key => instance.public_ip }
-hati-red-github-actions
+
 }

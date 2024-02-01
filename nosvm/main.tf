@@ -1,3 +1,9 @@
+resource "tfe_workspace" "la_taniere" {
+  name         = "la-taniere"
+  organization = "hati-blue"
+  force_delete = true
+}
+
 resource "aws_key_pair" "macle" {
   key_name   = "adolfo-key"
   public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC7i7HTNZcPUgPkoqtYiBAuv6Nk98vGhy6TXO9rcRc4EnwBffLOsgAgw04wmg1u0kuw0jZevFGwUhSa49/ryE936wSIIII68/nJEZppBMaIxT3hOQ9+3jAV7J3wY2R9C/URNxgFMNjaBLr49V7IcTfe0orifZeAJqzriw77bOa/+amvpPnqfi/h1FuYWyVv5LDwGr27b7poVRf5f7cmJCiFqAHjnMDZpe//WP+3WBu+AYfD0Y8lz6DlzPRfhjxWdvyQwiYvkSfB7MS3ugAINhuaaPZPfj1MKM0iL58ToJmSKQr8jMxw7RGZ5HBSGy6kkiM1rpNPDaY7u+a/PyIHHbek9LK2i6PG9p6LHctj7BpXwv3RIXxrpjMBgkKDxZvwktkPDxXFWMQhO1pW4m2DDKTQ3N+LlIApyJ8Ma7ZIYpiIY3RvfVxRmr1aHIsahlANtDJvSlGbsSrVlyP9gtgCMxCautKXdD2x/iffdRZNFJhEL/N40K/XFp6h7hHSr85EFi01so6Qk/nKY9oOka8luAMVfIrz/gVaXrIvVL7PIPGNuwlueBkzeJ0jBdjJ7Evzi2rf95GUYHBAKyShCnONuGoYDh9FeVrtZR6jYNk8fsL8UJSZJW7+JYcoxyWvsrx0fNo3Ma5GU36UB4cdmD+vsiX4NU/sHyvRuQ3v2ebVu4BByw== adolfo@WorkDev"

@@ -1,9 +1,9 @@
-# terraform {
-#   cloud {
-#     organization = "hati-blue"
+terraform {
+  cloud {
+    organization = "hati-blue"
 
-#     workspaces {
-#       name = "la-taniere"
-#     }
-#   }
-# }
+    workspaces {
+      name = "la-taniere"
+    }
+  }
+}

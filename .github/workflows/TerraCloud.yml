@@ -12,6 +12,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        path: nosvm
 
     - name: Set up Terraform
       uses: hashicorp/setup-terraform@v1
@@ -20,15 +22,15 @@ jobs:
         cli_config_credentials_token: ${{ secrets.TF_BLUE_API_TOKEN }}
 
     - name: Terraform Init
-      working-directory: ./nosvm
+      working-directory: nosvm
       run: terraform init
 
     - name: Terraform Plan
-      working-directory: ./nosvm
+      working-directory: nosvm
       run: terraform plan
 
     - name: Terraform Apply
-      working-directory: ./nosvm
+      working-directory: nosvm
       run: terraform apply -auto-approve
 
     # - name: Terraform Destroy

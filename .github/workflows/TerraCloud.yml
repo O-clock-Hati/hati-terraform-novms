@@ -33,6 +33,6 @@ jobs:
       working-directory: nosvm
       run: terraform apply tfplan
 
-    - name: Terraform Destroy
-      working-directory: nosvm
-      run: terraform destroy -auto-approve
+    # - name: Terraform Destroy
+    #   working-directory: nosvm
+    #   run: terraform destroy -auto-approve

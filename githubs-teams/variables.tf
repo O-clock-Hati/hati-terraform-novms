@@ -1,5 +1,5 @@
-variable "users" {
-  type = list(string)
-  default = ["profy12"]
+variable "user" {
+  type    = list(string)
+  default = ["nunomars"]
 }
 
